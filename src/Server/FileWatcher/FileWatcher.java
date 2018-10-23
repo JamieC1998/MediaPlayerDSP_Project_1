@@ -2,6 +2,12 @@ package Server.FileWatcher;
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 
 public class FileWatcher implements FileWatcherInterface{
@@ -61,6 +67,25 @@ public class FileWatcher implements FileWatcherInterface{
         }
 
         return folder.listFiles();
+    }
+
+    public File ReturnFileReq(String name){
+        for(File each: folder.listFiles()){
+            if(each.getName().equals(name))
+                return each;
+        }
+
+        return null;
+    }
+
+    public void AddFile(File src){
+        File dest = new File(directoryAddress + "\\" + src.getName());
+
+        try { Files.copy(src.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING); }
+
+        catch (IOException e) { e.printStackTrace(); }
+
+
     }
 
 }
