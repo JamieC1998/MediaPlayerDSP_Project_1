@@ -4,15 +4,24 @@ import Server.ClientObservers.Client;
 import Server.FileWatcher.FileObservable;
 import Server.FileWatcher.FileWatcher;
 import Server.FileWatcher.FileWatcherInterface;
+import Server.Loader;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.stage.Stage;
 
-public class HomeScreenController {
+import java.io.File;
+import java.io.IOException;
+
+public class HomeScreenController extends Loader {
 
     @FXML
     public ListView<String> lvLocal;
@@ -71,6 +80,7 @@ public class HomeScreenController {
 
     @FXML
     public void Download(ActionEvent e){
+
         String item = lvServer.getSelectionModel().getSelectedItem();
 
         FileWatcherInterface fw = new FileWatcher(serverDirectory);
@@ -81,13 +91,44 @@ public class HomeScreenController {
 
     }
 
+
     @FXML
     public void PlayFile(ActionEvent e){
+        FileWatcherInterface fileWatcherLocal = new FileWatcher(localDirectory);
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("MediaView.fxml"));
+
+        Parent root = null;
+
+        try {
+            root = (Parent) loader.load();
+
+        } catch (IOException ex) {
+            System.out.println("OOPS");
+            ex.printStackTrace();
+        }
+
+        MediaViewController returnObject = loader.getController();
+
+        String item = lvLocal.getSelectionModel().getSelectedItem();
+
+        File file = (((FileWatcher) fileWatcherLocal).ReturnFileReq(item));
+
+        System.out.println(file.getName());
+
+        if(returnObject == null){
+            System.out.println("NULL");
+        }
+
+        Stage primaryStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+
+        primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.show();
+
+        returnObject.setFile(file);
+
 
     }
-
-
-
 
 
 }
